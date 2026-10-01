@@ -11,22 +11,28 @@ df.columns=headers
 
 #give data types of all columns
 
-print(df.dtypes)
+# print(df.dtypes)
 
 #Statistical summary: for numerical fields
 
-print(df.describe())
+# print(df.describe())
 
 #gives information about row number, data types and memory usage
-print(df.info())
+# print(df.info())
 
 
 #Converting to correct data types :
 
-# mean_Property_loss=df["Property_loss(in USD)"].mean()
-# df["Property_loss(in USD)"].replace(np.nan,mean_Property_loss)
-# df["Property_loss(in USD)"]=df["Property_loss(in USD)"].astype("int")
-# print(df.dtypes)
+df["Property_loss(in USD)"] = pd.to_numeric(
+    df["Property_loss(in USD)"],
+    errors="coerce"
+)
+
+df.loc[df["Property_loss(in USD)"] < 0, "Property_loss(in USD)"] = np.nan
+
+median_loss = df["Property_loss(in USD)"].median()
+
+df["Property_loss(in USD)"] = df["Property_loss(in USD)"].fillna(median_loss)
 
 #dropping null values:
 
@@ -89,7 +95,7 @@ df["Suspect_LastName"]=df["Suspect_LastName"].fillna("Not yet identified")
 df["Victim_Gender"]=df["Victim_Gender"].fillna("Unknown")
 
 df["Suspect_Gender"]=df["Suspect_Gender"].fillna("Unknown")
-print(df.head())
+print(df.head(10))
 
 # print(df["Latitude"])
 
