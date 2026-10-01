@@ -33,31 +33,26 @@ df.loc[df["Property_loss(in USD)"] < 0, "Property_loss(in USD)"] = np.nan
 median_loss = df["Property_loss(in USD)"].median()
 
 df["Property_loss(in USD)"] = df["Property_loss(in USD)"].fillna(median_loss)
-
-#dropping null values:
-
-#dropped null badge values because badge value can't have a average values
-
-df.dropna(subset=["Badge_number"],axis=0)
+df["Property_loss(in USD)"]=df["Property_loss(in USD)"].astype("int")
 
 #Replacing null values in numerical columns with their mean values
 # print(df["Latitude"])
 mean_Latitude=df["Latitude"].mean()
-df["Latitude"].replace(np.nan,mean_Latitude)
+df["Latitude"]=df["Latitude"].replace(np.nan,mean_Latitude).round(2)
 
 mean_Longitude=df["Longitude"].mean()
-df["Longitude"].replace(np.nan,mean_Longitude)
+df["Longitude"]=df["Longitude"].replace(np.nan,mean_Longitude).round(2)
 
 mean_Suspect_age=df["Suspect_Age"].mean()
 df["Suspect_Age"].replace(np.nan,mean_Suspect_age)
 
 mean_Victim_age=df["Victim_Age"].mean()
 df.loc[df["Victim_Age"]<0,"Victim_Age"]=np.nan
-df["Victim_Age"].replace(np.nan,mean_Victim_age)
+df["Victim_Age"]=df["Victim_Age"].fillna(mean_Victim_age).round(2)
 
 mean_Suspect_age=df["Suspect_Age"].mean()
 df.loc[df["Suspect_Age"]<0,"Suspect_Age"]=np.nan
-df["Suspect_Age"].replace(np.nan,mean_Suspect_age)
+df["Suspect_Age"]=df["Suspect_Age"].fillna(mean_Suspect_age).round(2)
 
 # cleaning num_arrests column
 df.loc[df["Num_Arrests"]<0,"Num_Arrests"]=np.nan
@@ -72,10 +67,12 @@ df["Case_Status"].replace(np.nan,"Open")
 df["Resolution"]=df["Resolution"].fillna("No Action Taken")
 df["Resolution"].replace(np.nan,"No Action Taken")
 
+df["Reported_Online"]=(df["Reported_Online"].astype("string").str.strip().str.lower())
+
 df["Reported_Online"]=df["Reported_Online"].fillna("Reported through another method")
 df["Reported_Online"].replace(np.nan,"Reported through another method")
-df.loc[df["Reported_Online"]=="1","Reported_Online"]="True"
-df.loc[df["Reported_Online"]=="0","Reported_Online"]="False"
+df.loc[df["Reported_Online"]=="1","Reported_Online"]="yes"
+df.loc[df["Reported_Online"]=="0","Reported_Online"]="no"
 
 df["notes"]=df["notes"].fillna("No notes were provided for this crime....")
 
@@ -89,16 +86,27 @@ df["Suspect_Id"]=df["Suspect_Id"].fillna("No yet Identified")
 df["Suspect_FirstName"]=df["Suspect_FirstName"].fillna("Not yet identified")
 df["Suspect_LastName"]=df["Suspect_LastName"].fillna("Not yet identified")
 
+df["Incident_DateTime"]=df["Incident_DateTime"].fillna("Not identified")
+
 # df.dropna(inplace=True)
 # Nogender=df["Victim_Gender"].isna().sum()
 # print(Nogender)
 df["Victim_Gender"]=df["Victim_Gender"].fillna("Unknown")
 
 df["Suspect_Gender"]=df["Suspect_Gender"].fillna("Unknown")
-print(df.head(10))
+
+df["Victim_Phone"]=df["Victim_Phone"].fillna("Not identified/Not given")
+
+#Officer's field:
+df["Badge_number"]=df["Badge_number"].fillna(0)
+df["Badge_number"]=df["Badge_number"].astype("int")
+# print(df.head(10))
 
 # print(df["Latitude"])
 
 # print(df["Suspect_FirstName"].head(30))
 df.to_csv("cleaned_crime_data.csv")
+
+
+
 print("Successfully written the data in the file")
